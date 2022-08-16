@@ -49,6 +49,7 @@ FALLBACK=v0.2.9
 CACERTS_PATH=cacerts
 RETRYCOUNT=4500
 APPLYINATOR_ACTIVE_WAIT_COUNT=60 # If the system-agent is unhealthy but had created an interlock file to indicate it was actively applying a plan, after 5 minutes, ignore the interlock.
+DEFAULT_BIN_PREFIX=/usr/local
 
 # info logs the given argument at info log level.
 info() {
@@ -73,12 +74,12 @@ fatal() {
 
 # check_target_mountpoint return success if the target directory is on a dedicated mount point
 check_target_mountpoint() {
-    mountpoint -q "${CATTLE_AGENT_BIN_PREFIX}"
+    mountpoint -q "${DEFAULT_BIN_PREFIX}"
 }
 
 # check_target_ro returns success if the target directory is read-only
 check_target_ro() {
-    touch "${CATTLE_AGENT_BIN_PREFIX}"/.r-sa-ro-test && rm -rf "${CATTLE_AGENT_BIN_PREFIX}"/.r-sa-ro-test
+    touch "${DEFAULT_BIN_PREFIX}"/.r-sa-ro-test && rm -rf "${DEFAULT_BIN_PREFIX}"/.r-sa-ro-test
     test $? -ne 0
 }
 
@@ -855,6 +856,12 @@ create_env_file() {
         echo "$i=$v" | tee -a ${FILE_SA_ENV} >/dev/null
       fi
     done
+
+    # if we have a read only /usr/local is read only or on a separate
+    # partition, we want to add the bin dirs of rke2/k3s to our path
+    if check_target_mountpoint || check_target_ro; then
+        echo "PATH=${PATH}:/opt/rke2/bin:/opt/bin" | tee -a ${FILE_SA_ENV} >/dev/null
+    fi
 }
 
 ensure_applyinator_not_active() {
