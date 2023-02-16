@@ -730,6 +730,7 @@ validate_ca_required() {
 }
 
 retrieve_connection_info() {
+    RANCHER_SUCCESS=false
     if [ "${CATTLE_REMOTE_ENABLED}" = "true" ]; then
         UMASK=$(umask)
         umask 0177
@@ -743,6 +744,7 @@ retrieve_connection_info() {
             case "${RESPONSE}" in
             200)
                 info "Successfully downloaded Rancher connection information"
+                RANCHER_SUCCESS=true
                 break
                 ;;
             *)
@@ -753,6 +755,9 @@ retrieve_connection_info() {
                 ;;
             esac
         done
+        if [ "${RANCHER_SUCCESS}" != "true" ]; then
+          fatal "Error retrieving connection info from Rancher. Last response was ${RESPONSE}"
+        fi
         umask "${UMASK}"
     fi
 }
