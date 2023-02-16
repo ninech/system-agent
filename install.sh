@@ -47,7 +47,7 @@ fi
 
 FALLBACK=v0.2.9
 CACERTS_PATH=cacerts
-RETRYCOUNT=4500
+RETRYCOUNT=5
 APPLYINATOR_ACTIVE_WAIT_COUNT=60 # If the system-agent is unhealthy but had created an interlock file to indicate it was actively applying a plan, after 5 minutes, ignore the interlock.
 DEFAULT_BIN_PREFIX=/usr/local
 
