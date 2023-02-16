@@ -46,7 +46,7 @@ fi
 
 FALLBACK=v0.2.9
 CACERTS_PATH=cacerts
-RETRYCOUNT=4500
+RETRYCOUNT=5
 DEFAULT_BIN_PREFIX=/usr/local
 
 # info logs the given argument at info log level.
